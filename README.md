@@ -1,6 +1,7 @@
 # README
 
-##Project Description 
+## Project Description 
+
 Treasure hunt is a simple game where players need to make requests to find treasure and players which are within 5 meters of radius should get an email with the treasure location and those players will be the winners
 
 ## Specifications  
