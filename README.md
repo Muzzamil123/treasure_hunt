@@ -26,15 +26,21 @@ Treasure hunt is a simple game where players need to make requests to find treas
  * install and run redis
  * go inside project folder and run gem install bundler
  * run bundle install
- ##### Set environment variables
+ 
+ #### Set environment variables
+ 
  * export DB_USER =
  * export DB_PASSWORD = 
  * export REDIS_URL =
- ######Production related envs
+ 
+ #### Production related envs
+ 
  * SENDGRID_API_KEY
  * APP_HOST
  * APP_DOMAIN
- ######Optional environment vars
+ 
+ #### Optional environment vars
+ 
  * TREASURE_LAT
  * TREASURE_LNG 
  * RADIUS_IN_METERS
@@ -89,5 +95,6 @@ Treasure hunt is a simple game where players need to make requests to find treas
 * In production.rb we need to add server details i.e. server ip with either main or deploy user
 * In Capfile we need to add dependencies like rbenv, passenger which we've configured on production server
 * This is the command for code deployment ```cap production deploy```, for staging ```cap staging deploy```
-#####Note:
+
+#### Note:
 I've pushed capistrano files but normally we don't push these files, these 3 files should need to be in local environment
