@@ -34,6 +34,13 @@ group :development, :test do
   gem 'rspec-rails'
   # Use Faker to create dummy data
   gem 'faker'
+  # Use for geocoding calculations/operations
+  gem 'geocoder'
+  # Use to preview mails in browser
+  gem "letter_opener"
+  # Use to perform background jobs
+  gem 'sidekiq'
+  gem 'rack-defense'
 end
 
 group :development do

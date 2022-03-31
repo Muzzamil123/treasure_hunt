@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   namespace :api, constraints: { format: 'json' } do
     namespace :v1 do
       post 'treasure_hunt', to: 'analytics#create', as: :treasure_hunt
+      get 'analytics', to: 'analytics#analytics', as: :analytics
     end
   end
 end
