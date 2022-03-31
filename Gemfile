@@ -34,13 +34,6 @@ group :development, :test do
   gem 'rspec-rails'
   # Use Faker to create dummy data
   gem 'faker'
-  # Use for geocoding calculations/operations
-  gem 'geocoder'
-  # Use to preview mails in browser
-  gem "letter_opener"
-  # Use to perform background jobs
-  gem 'sidekiq'
-  gem 'rack-defense'
 end
 
 group :development do
@@ -48,7 +41,28 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  # Use to preview mails in browser
+  gem "letter_opener"
+
+  #
+  # Capistrano for deployment
+  gem 'capistrano',                 '3.11.2'
+  gem 'capistrano-rails',           '1.4.0'
+  gem 'capistrano-rbenv',           '2.1.4 '
+  gem 'capistrano-passenger',       '0.2.1'
 end
 
+group :production do
+  gem 'sendgrid-ruby'
+end
+
+# Use to perform background jobs
+gem 'sidekiq', '~> 6.1.3'
+# Redis for caching and mantaining jobs
+gem 'redis-rails', '~> 5.0.2'
+# Use to check throttling n stuff
+gem 'rack-defense'
+# Use for geocoding calculations/operations
+gem 'geocoder'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

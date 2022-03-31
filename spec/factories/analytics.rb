@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :analytic do
-    email { "MyString" }
+    email { "" }
   end
 end

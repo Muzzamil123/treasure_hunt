@@ -8,24 +8,21 @@ module AnalyticsHelper
     end
 
     def as_json
+      response = {}
       if @singular
-        {
-          status: 'error',
-          descrition: data.description,
-          error: data.error
+        response[:requests] = {
+          email: @data.email,
+          current_location: [@data.latitude,@data.longitude]
         }
       else
-        data.map do |request|
+        response[:requests] = @data.map do |request|
           {
-            "requests": {
-              id: request.id,
-              name: request.email,
-              description: request.latitude,
-              location: request.longitude,
-            }
+            email: request.email,
+            current_location: [request.latitude,request.longitude]
           }
         end
       end
+      response
     end
 
     private

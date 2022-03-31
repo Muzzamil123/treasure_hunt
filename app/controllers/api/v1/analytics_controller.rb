@@ -3,37 +3,41 @@ class Api::V1::AnalyticsController < ApplicationController
 
   # creates record for all attempts
   def create
-    request = Analytic.create!(email: analytics_params[:email],
+    # it will raise an exception if any argument is wrong
+    created_record = Analytic.create!(email: analytics_params[:email],
                                 latitude: analytics_params[:current_location][0],
                                 longitude: analytics_params[:current_location][1]
     )
-    is_winner?(request)
+    distance_between = Geocoder::Calculations.distance_between([created_record.latitude, created_record.longitude], [TREASURE_LAT, TREASURE_LNG]) * 1000
+    is_winner?(created_record, distance_between)
+    return render json: {status: 'ok', distance: distance_between}, status: :ok
   end
 
-  # returns analytics
-  def analytics
+  # returns stats of requests
+  def stats
+    # checking params validity
     begin
-    from_time = Date.parse(params['from_time'])
-    to_time = Date.parse(params['to_time'])
+      from_time = DateTime.parse(stats_params[:from_time])
+      to_time = DateTime.parse(stats_params[:to_time])
     rescue
+      return render json: ErrorsPresenter.new({description: 'please send correct from time and to time'}).as_json, status: :unprocessable_entity
     end
-    all_attempts = Analytic.all
+    all_records = Analytic.created_between(from_time, to_time)
 
-    attempts = []
-    if params['radius'].present?
-      all_attempts.each do |attempt|
-        near_bys = Geocoder::Calculations.
-          distance_between([attempt.latitude, attempt.longitude], [TREASURE_LAT, TREASURE_LNG]) * 1000
-        if near_bys <= params['radius']
-          attempts << attempt
+    if stats_params[:radius].present?
+      records = []
+      # filtering records within specific radius
+      all_records.each do |record|
+        near_records = Geocoder::Calculations.
+          distance_between([record.latitude, record.longitude], [TREASURE_LAT, TREASURE_LNG]) * 1000
+        if near_records <= stats_params[:radius].to_f
+          records << record
         end
       end
-    else
-      attempts = Analytic.created_between(from_time, to_time)
+      all_records = records
     end
 
-    render json: AnalyticsPresenter.new(attempts, false).as_json, status: :ok
-
+    return render json: AnalyticsPresenter.new(all_records, false).as_json, status: :ok
   end
 
   private
@@ -42,25 +46,20 @@ class Api::V1::AnalyticsController < ApplicationController
     params.permit(:email, current_location: [])
   end
 
-  # logic to determine winner of treasure hunt
-  def is_winner?(request)
-    distance = Geocoder::Calculations.distance_between([request.latitude, request.longitude], [TREASURE_LAT, TREASURE_LNG]) * 1000
-    if distance <= 5
-      already_won = Winner.find_by(email: request.email)
-      unless already_won.present?
-        winner = Winner.create(email: request.email, last_location: "#{request.latitude.to_f}/#{request.longitude.to_f}")
-        winner_mail(winner, distance)
-      else
-        render json: AnalyticsPresenter.new(winner, false).as_json, status: :created
-      end
-    else
-      render json: { Result: "you failed" }, status: 201
-    end
+  def stats_params
+    params.permit(:from_time, :to_time, :radius)
   end
 
-  # send mail in case of win
-  def winner_mail(winner, distance)
-    WinnerMailer.with(winner: winner).new_winner_email.deliver_now
-    render json: { distance: distance }, status: 201
+  # logic to determine winner of treasure hunt
+  def is_winner?(created_record, distance_between)
+    winner = false
+    if distance_between < RADIUS_IN_METERS
+      # create winner record
+      winner_record = Winner.create(email: created_record.email, last_location: "#{created_record.latitude},#{created_record.longitude}")
+      unless winner_record.errors.any?
+        winner = true
+      end
+    end
+    winner
   end
 end

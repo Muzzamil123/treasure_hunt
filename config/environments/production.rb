@@ -50,8 +50,8 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "treasure_hunt_production"
+  config.active_job.queue_adapter     = :sidekiq
+  config.active_job.queue_name_prefix = "treasure_hunt_production"
 
   config.action_mailer.perform_caching = false
 
@@ -81,6 +81,21 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+  # Mail configuration
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default :charset => "utf-8"
+  config.action_mailer.default_url_options = { host: ENV["APP_HOST"] }
+  # Sendgrid mail configuration for production
+  ActionMailer::Base.smtp_settings = {
+      address: "smtp.sendgrid.net",
+      port: "587",
+      authentication: :plain,
+      user_name: "apikey",
+      password: ENV["SENDGRID_API_KEY"], # ENV["SENDGRID_API_KEY"]
+      domain: ENV["APP_DOMAIN"],
+      enable_starttls_auto: true
+  }
 
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector

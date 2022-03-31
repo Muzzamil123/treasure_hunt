@@ -44,9 +44,10 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000', protocol: 'http' }
   config.action_mailer.delivery_method = :letter_opener
+  config.active_job.queue_name_prefix = "treasure_hunt_#{Rails.env}"
   config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
   config.active_job.queue_adapter = :sidekiq
-  config.action_mailer.smtp_settings = { address: '127.0.0.1', port: 1025, domain: '127.0.0.1' }
 
   # Raises error for missing translations.
   # config.action_view.raise_on_missing_translations = true
